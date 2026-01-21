@@ -2,32 +2,41 @@ import React from 'react'
 import Header from "@/components/Header/Header";
 import ErrorNonExistent from "./nonexistent";
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Home, Star } from 'lucide-react'
+import Image from 'next/image'
+import { ChevronLeft, ChevronRight, Home, Star, TicketCheck, UserRound } from 'lucide-react'
 import ChatbotButton from '@/components/Chatbot/button';
 import ChatbotDialog from '@/components/Chatbot/dialog';
 import PortfolioPopup from '@/components/PortfolioPopup/PortfolioPopup';
 import Footer from '@/components/Footer/Footer';
 
-function ProductThumbnailSlider() {
+function ProductThumbnailSlider({ thumb, images }) {
     return (
         <div>
-            <div className="w-100 h-80 bg-blue-400 mx-8 rounded-[10px] relative overflow-clip">
+            <div className="w-100 h-80 bg-white rounded-[10px] mx-8 overflow-clip object-contain relative">
                 {/* thumbs */}
-                <div></div>
+                <Image src={thumb} alt="Product Thumbnail" fill></Image>
             </div>
             {/* thumbnails list */}
-            <div className="h-25 w-100 bg-blue-400 my-2 mx-8 rounded-[10px] relative overflow-clip">
+            <div className="w-100 bg-gray-300 my-2 mx-8 rounded-[5px] relative overflow-clip">
                 {/* thumbs */}
-                <div></div>
+                <div className='flex flex-row'>
+                    { images.map((item, index) => {
+                        return (
+                            <Link key={index} href="" className='bg-white m-1 shadow-2xs'>
+                                <Image src={item} width={70} height={70} alt={`image ${index}`}></Image>
+                            </Link>
+                        )
+                    }) }
+                </div>
                 {/* controls */}
-                <div className='top-0 left-0 right-0 bottom-0 absolute'>
-                    <Link href="">
-                        <div className='bg-[#0002] top-0 left-0 bottom-0 absolute flex justify-center items-center w-16'>
+                <div className='top-0 left-0 right-0 bottom-0 absolute pointer-events-none'>
+                    <Link href="" className='pointer-events-auto'>
+                        <div className='bg-[#0003] top-0 left-0 bottom-0 absolute flex justify-center items-center w-16'>
                             <ChevronLeft color='#000' size={40}></ChevronLeft>
                         </div>
                     </Link>
-                    <Link href="">
-                        <div className='bg-[#0002] top-0 right-0 bottom-0 absolute flex justify-center items-center w-16'>
+                    <Link href="" className='pointer-events-auto'>
+                        <div className='bg-[#0003] top-0 right-0 bottom-0 absolute flex justify-center items-center w-16'>
                             <ChevronRight color='#000' size={40}></ChevronRight>
                         </div>
                     </Link>
@@ -37,16 +46,16 @@ function ProductThumbnailSlider() {
     )
 }
 
-function ProductRating({ rating }) {
+function RatingScore({ marginy = 2, rating, size = 20, showLabel = true }) {
     return (
-        <div className='flex flex-row my-2'>
+        <div className='flex flex-row my-[marginy]'>
             { Array.from({length: 5}).map((item, index) => (
                 <React.Fragment key={index}>
-                    { index < rating ? <Star fill='gold' color='gold' size={20}></Star> : <Star fill='#ccc' color='#ccc' size={20}></Star>}
+                    { index < rating ? <Star fill='orange' color='orange' size={size}></Star> : <Star fill='#ccc' color='#ccc' size={size}></Star>}
                 </React.Fragment>
             ))}
             {/* <div className='mx-2'>—</div> */}
-            <div className='mx-2'>{rating}/5 ratings</div>
+            { showLabel && <div className='mx-2'>{rating.toFixed(1)}/5 ratings</div> }
         </div>
     )
 }
@@ -57,30 +66,86 @@ function Button({ text, action = '' }) {
     )
 }
 
-function ProductInformation({ title, price }) {
+// function ProductSpecifications({ productInfo }) {
+//     return (
+//         <div>
+//             {/* dimensions */}
+//             {/* <div>{ productInfo['warrantyInformation'] }</div> */}
+//             {/* warranty */}
+//             <div>{ productInfo['warrantyInformation'] }</div>
+//             {/* shipping */}
+//             <div>{ productInfo['shippingInformation'] }</div>
+//         </div>
+//     )
+// }
+
+function ProductSpecificationEntry({ title, children }) {
+    return (
+        <div className='flex flex-row gap-5'>
+            <div className='text-[#555]'>{title}</div>
+            <div>{children}</div>
+        </div>
+    )
+}
+
+function ProductInformation({ productInfo }) {
+    var originalPrice = productInfo['price'];
+    var discountedPrice = (originalPrice * (1 - productInfo['discountPercentage'] / 100)).toFixed(2);
+
     return (
         <div className="flex flex-col py-2">
             {/* product title */}
-            <div className="text-3xl">{ title }</div>
-            <ProductRating rating={2}></ProductRating>
-            <div className="text-4xl text-blue-500 font-bold">{ price }</div>
-            <div className='flex flex-row gap-4'>
-                <Button text="Buy Now"></Button>
-                <Button text="Add to cart"></Button>
+            <div className="text-3xl">{ productInfo['title'] }</div>
+            <RatingScore rating={productInfo['rating']}></RatingScore>
+            <div className='flex flex-row items-center gap-3'>
+                <div className="text-[30px] text-blue-500 font-bold">${ discountedPrice }</div>
+                <TicketCheck color="#4a4" fill='#afa'></TicketCheck>
+                <div className="text-[18px] text-gray-500 line-through italic">${ originalPrice }</div>
+            </div>
+
+            {/* brand */}
+            { productInfo['brand'] && <ProductSpecificationEntry title="Brand">{ productInfo['brand'] }</ProductSpecificationEntry> }
+            {/* dimensions */}
+            {/* <ProductSpecificationEntry title="Dimensions">
+                <div>
+                    <div className='flex flex-row gap-3'>
+                        <div>Width</div>
+                        <div>{ productInfo['dimensions']['width'] }</div>
+                    </div>
+                    <div className='flex flex-row gap-3'>
+                        <div>Height</div>
+                        <div>{ productInfo['dimensions']['height'] }</div>
+                    </div>
+                    <div className='flex flex-row gap-3'>
+                        <div>Depth</div>
+                        <div>{ productInfo['dimensions']['depth'] }</div>
+                    </div>
+                </div>
+            </ProductSpecificationEntry> */}
+            <div className='my-4 italic'>{ productInfo['description'] }</div>
+            {/* warranty */}
+            <ProductSpecificationEntry title="Warranty">{ productInfo['warrantyInformation'] }</ProductSpecificationEntry>
+            {/* shipping */}
+            <ProductSpecificationEntry title="Shipping">{ productInfo['shippingInformation'] }</ProductSpecificationEntry>
+
+            <div className='flex flex-col mt-auto'>
+                <div className='text-[#555]'>{ `${productInfo['stock']} In Stock*` }</div>
+                <div className='flex flex-row gap-4 my-4'>
+                    <Button text="Buy Now"></Button>
+                    <Button text="Add to cart"></Button>
+                </div>
             </div>
         </div>
     )
 }
 
-function ProductLanding() {
-    var pTitle = "awoo?";
-    var pDescription = "awooga?";
+function ProductLanding({ productInfo }) {
     return (
         <div className="flex flex-row m-4">
             {/* product thumbnail */}
-            <ProductThumbnailSlider></ProductThumbnailSlider>
+            <ProductThumbnailSlider thumb={productInfo['thumbnail']} images={productInfo['images']}></ProductThumbnailSlider>
             {/* product information */}
-            <ProductInformation title={pTitle} price="₱200 - ₱400"></ProductInformation>
+            <ProductInformation productInfo={productInfo}></ProductInformation>
         </div>
     )
 }
@@ -92,7 +157,7 @@ function CategoryTree({ items }) {
                 <React.Fragment key={index}>
                     { index == 0 && <Link href="/"><Home className='mx-2'></Home></Link> }
                     { index == 0 && <ChevronRight color="#ccc"></ChevronRight> }
-                    { index >= items.length - 1 ? <Link href={"/category/" + item} className="p-2 font-bold">{item}</Link> : <Link href={"/category/" + item} className="p-2">{item}</Link> }
+                    { index >= items.length - 1 ? <Link href={"/product?id=" + item} className="p-2 font-bold">{item}</Link> : <Link href={"/category/" + item} className="p-2">{item.toUpperCase()}</Link> }
                     { index < items.length - 1 && <ChevronRight color="#ccc"></ChevronRight> }
                 </React.Fragment>
             )) }
@@ -100,58 +165,57 @@ function CategoryTree({ items }) {
     )
 }
 
-function SellerInformation() {
+function SectionBox({ title, children }) {
     return (
-        // <div className='flex flex-row bg-white shadow-2xl p-4 rounded-[10px]'>
-        <div className='flex flex-row bg-white border-y border-y-[#ddd] p-4'>
-            <div className='size-20 rounded-full bg-blue-400 my-2 mr-4'></div>
-            <div className='flex flex-col'>
-                <div className='flex flex-row items-center'>
-                    <div className='font-bold'>SELLER NAME</div>
-                    <div className='size-3 mx-2 bg-[#bbb] rounded-full'></div>
-                    <div className='text-[#888]'>Active 4h ago</div>
-                </div>
-                <div className='flex flex-row items-center'>
-                    <div>Responsiveness</div>
-                    <div className='mx-2'>—</div>
-                    <ProductRating rating={3}></ProductRating>
-                </div>
-                <div className='flex flex-row items-center'>
-                    <div>Customer Service</div>
-                    <div className='mx-2'>—</div>
-                    <ProductRating rating={3}></ProductRating>
-                </div>
-            </div>
-            <div className='ml-auto flex flex-col'>
-                <div>Visit Shop</div>
-                <div>Follow</div>
-            </div>
+        <div className='bg-white p-2 m-2'>
+            <div className='m-2 text-black font-bold text-14'>{ title }</div>
+            <div className='p-2'>{ children }</div>
         </div>
     )
 }
 
-function SectionBox({ title, children }) {
+function ReviewItem({ reviewInfo }) {
     return (
-        <div className='bg-white p-4 m-2'>
-            <div className='text-black font-bold text-14'>{ title }</div>
-            <div>{ children }</div>
+        <div className='flex flex-row gap-2 my-2'>
+            <div className='rounded-full size-12 bg-gray-300 justify-center items-center flex'>
+                <UserRound></UserRound>
+            </div>
+            <div className='flex flex-col leading-none'>
+                <div>{ reviewInfo['reviewerName'] }</div>
+                <RatingScore rating={reviewInfo['rating']} size={15} showLabel={false} marginy={0}/>
+                <div className='m-2'>{ reviewInfo['comment'] }</div>
+            </div>
         </div>
     )
 }
 
 export default async function ProductPage( {searchParams }) {
+    // Get search parameters
     var sp = await searchParams;
     
+    // Errpr if no product id provided
     if (!sp.id) return (
         <ErrorNonExistent></ErrorNonExistent>
     );
 
+    // Query product information
+    var apiResp = await fetch(`https://dummyjson.com/products/${sp['id']}`);
+
+    // Check API response
+
+    if (!apiResp.ok) {
+        console.log(apiResp.body);
+        throw new Error("Internal server error!");
+    }
+
+    var productInfo = await apiResp.json();
+
+    // Create list for CategoryTree
     var catItems = [
-        'Home Appliances',
-        'Motors',
-        'Power Drill',
-        'PRODUCT NAME'
-    ]
+        productInfo['category']
+    ].concat([
+        productInfo['title']
+    ])
 
     return (
         <div className="flex flex-col">
@@ -159,24 +223,18 @@ export default async function ProductPage( {searchParams }) {
             {/* product category tree */}
             <div className="w-[80%] mx-auto items-center">
                 <CategoryTree items={catItems}></CategoryTree>
-                <ProductLanding></ProductLanding>
-                {/* seller information */}
-                <SellerInformation></SellerInformation>
+                <ProductLanding productInfo={productInfo}></ProductLanding>
                 {/* product description */}
-                {/* <SectionBox title="Description">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque feugiat mi sed leo cursus, a dictum urna sagittis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aenean non tellus quis dui tristique euismod quis nec augue. Quisque ac ex urna. Mauris molestie viverra lacus, ac consectetur tortor consectetur ac. Nullam vestibulum a turpis eget malesuada. Integer non ligula at purus porta ornare. Suspendisse luctus tempus facilisis. Morbi et tortor lacus. Proin auctor tellus a magna porta vehicula.
-
-Nam fermentum bibendum arcu eget scelerisque. In imperdiet semper semper. Phasellus tincidunt gravida enim eu euismod. Nulla a euismod velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. In mollis lacinia purus, vitae porta massa porttitor sit amet. Curabitur gravida velit eu tortor aliquet, accumsan rhoncus est gravida. Pellentesque ultricies nisl eu odio sollicitudin, vitae pulvinar neque pulvinar. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Ut sagittis hendrerit diam, at sodales odio interdum ac. Pellentesque diam est, dignissim at felis at, porta ornare sem. Morbi accumsan fermentum pulvinar.
-
-Nulla facilisi. Proin eu ultrices elit, id sodales risus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur id enim et leo bibendum lobortis. Nulla efficitur semper sapien sed mattis. In hac habitasse platea dictumst. Curabitur sit amet nulla quis magna pretium pretium vitae at nunc. Quisque ut nunc at sapien aliquet imperdiet sit amet et ex. Nunc ac turpis imperdiet, finibus erat at, bibendum odio. Phasellus posuere leo eget nulla imperdiet, ut congue leo scelerisque. Donec purus est, maximus ut posuere non, volutpat non erat. Nullam arcu quam, porttitor ac tincidunt non, rhoncus a nibh. Ut velit nibh, fermentum sed placerat vitae, ultricies a enim. Integer ultricies felis metus, sed ultricies metus congue nec. Nulla a est eget metus dapibus vehicula.
-                </SectionBox> */}
-                {/* reviews */}
+                {/* <div className='flex flex-row bg-white border-y border-y-[#ddd] p-4'>
+                    <div>{productInfo['description']}</div>
+                </div> */}
                 {/* related recommendations */}
                 <SectionBox title="Related Products">
-
+                    
                 </SectionBox>
+                {/* reviews */}
                 <SectionBox title="Reviews">
-
+                    { productInfo['reviews'].map((item, index) => <ReviewItem key={index} reviewInfo={item}/>)}
                 </SectionBox>
                 <SectionBox title="More Products">
 
