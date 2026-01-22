@@ -9,6 +9,7 @@ import ReviewSection from './ReviewSection/ReviewSection';
 import CategoryTree from '@/app/product/CategoryTree'
 import SectionBox from '@/app/product/SectionBox'
 import ProductLanding from '@/app/product/ProductLanding/ProductLanding';
+import RelatedProducts from './RelatedProducts';
 
 export default async function ProductPage( {searchParams }) {
     // Get search parameters
@@ -48,9 +49,9 @@ export default async function ProductPage( {searchParams }) {
 
                 {/* related recommendations */}
                 <SectionBox title="Related Products">
-                    
+                    <RelatedProducts></RelatedProducts>
                 </SectionBox>
-                
+
                 {/* reviews */}
                 <ReviewSection productInfo={productInfo}></ReviewSection>
 
