@@ -1,15 +1,11 @@
 import React from 'react'
-import Header from "@/components/Header/Header";
 import ErrorNonExistent from "./nonexistent";
-import ChatbotButton from '@/components/Chatbot/button';
-import ChatbotDialog from '@/components/Chatbot/dialog';
-import PortfolioPopup from '@/components/PortfolioPopup/PortfolioPopup';
-import Footer from '@/components/Footer/Footer';
 import ReviewSection from './ReviewSection/ReviewSection';
 import CategoryTree from '@/app/product/CategoryTree'
 import SectionBox from '@/app/product/SectionBox'
 import ProductLanding from '@/app/product/ProductLanding/ProductLanding';
 import RelatedProducts from './RelatedProducts';
+import BaseLayout from '@/components/BaseLayout';
 
 export default async function ProductPage( {searchParams }) {
     // Get search parameters
@@ -27,7 +23,8 @@ export default async function ProductPage( {searchParams }) {
 
     if (!apiResp.ok) {
         console.log(apiResp.body);
-        throw new Error("Internal server error!");
+        return <ErrorNonExistent/>;
+        // throw new Error("Internal server error!");
     }
 
     var productInfo = await apiResp.json();
@@ -40,10 +37,9 @@ export default async function ProductPage( {searchParams }) {
     ])
 
     return (
-        <div className="flex flex-col">
-            <Header></Header>
+        <BaseLayout>
             {/* product category tree */}
-            <div className="w-[80%] mx-auto items-center">
+            <div className="mx-auto items-center">
                 <CategoryTree items={catItems}></CategoryTree>
                 <ProductLanding productInfo={productInfo}></ProductLanding>
 
@@ -59,13 +55,6 @@ export default async function ProductPage( {searchParams }) {
 
                 </SectionBox>
             </div>
-            {/* chatbot */}
-            {/* <div className='flex flex-row gap-2 m-4 fixed right-0 bottom-0'>
-                <ChatbotDialog></ChatbotDialog>
-                <ChatbotButton></ChatbotButton>
-            </div> */}
-            {/* <PortfolioPopup></PortfolioPopup> */}
-            <Footer></Footer>
-        </div>
+        </BaseLayout>
     );
 }
