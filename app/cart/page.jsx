@@ -1,14 +1,9 @@
-import Footer from "@/components/Footer/Footer";
-import Header from "@/components/Header/Header";
+import BaseLayout from "@/components/BaseLayout";
 
-export default function CartPage() {
+export default async function CartPage() {
     return (
-        <>
-            <Header></Header>
-            <div>
-                
-            </div>
-            <Footer></Footer>
-        </>
+        <BaseLayout>
+        
+        </BaseLayout>
     )
 }
