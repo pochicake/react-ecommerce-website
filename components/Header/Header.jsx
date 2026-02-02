@@ -4,7 +4,7 @@ import SearchFilters from './SearchSection/SearchFilters'
 import { ShoppingCart, UserRound } from 'lucide-react'
 import Image from 'next/image'
 
-export default function Header() {
+export default function Header({ searchQuery }) {
     return (
         <div className='flex flex-row w-full bg-white'>
             <div className='flex flex-row w-[80%] mx-auto'>
@@ -16,7 +16,7 @@ export default function Header() {
                     <div className='flex flex-row w-full items-center'>
                         {/* categories */}
                         {/* search section */}
-                        <SearchBar></SearchBar>
+                        <SearchBar currentValue={searchQuery}></SearchBar>
                         <div className='ml-auto flex flex-row gap-2 mr-4 align-middle'>
                             <Link href="">
                                 <div className='p-2 rounded-full'>
