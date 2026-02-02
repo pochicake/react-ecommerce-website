@@ -6,7 +6,7 @@ export default function ProductsSlider({ items }) {
     // console.log(items)
     return (
         <div className="flex flex-row p-4 overflow-scroll w-full">
-            { items.map((item, index) => {
+            { items.length && items.map((item, index) => {
                 return (
                     <Link key={index} href={`/product?id=${item['id']}`} className="flex flex-col py-2 rounded-[10px] bg-white px-4 mx-1 border border-[#ccc] hover:underline">
                         <div className="relative w-30 h-25 p-2 object-contain">
