@@ -1,6 +1,6 @@
 "use client"
 import { X, Bot, Send } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Markdown from 'react-markdown'
 
 
@@ -27,9 +27,16 @@ function ChatMessageBubble({ content, role = 'assistant' }) {
 }
 
 function ChatContainer({ messages }) {
-    console.log(messages)
+    var contentRef = useRef(null);
+
+    useEffect(() => {
+        if (contentRef.current) {
+            contentRef.current.scrollTop = contentRef.current.scrollHeight;
+        }
+    }, [ messages ]);
+
     return (
-        <div className="h-full flex flex-col overflow-y-scroll overflow-x-hidden py-4">
+        <div ref={contentRef} className="h-full flex flex-col overflow-y-scroll overflow-x-hidden py-4 snap-y snap-mandatory">
             <div className="mt-auto">
                 <div className="flex flex-col mx-auto items-center max-w-[70%]">
                     <div className="font-bold text-[20px]">Meet, Neo!</div>
